@@ -56,7 +56,7 @@ export function renderLightApp(onBack, onNext) {
       </main>
       <footer class="light-bottom"><div class="light-history"><button type="button" data-light-action="back">← 返回构图裁切</button><span>参数会自动保留，方便低分重修</span></div><div class="light-progress"><span>01 构图</span><i></i><strong>02 光影</strong><i></i><span>03 调色</span></div><button class="light-confirm" type="button" data-light-action="confirm"><span>✓</span>保存光影并进入调色 <b>→</b></button></footer><div class="light-toast" id="light-toast" role="status"></div>
     </div>`;
-  bindLightEvents(onBack);
+  bindLightEvents(onBack, onNext);
   updateLightPreview();
 }
 
@@ -163,7 +163,7 @@ function showLightToast(message) {
  * 返回值：无。
  * 边界情况：重复挂载时只绑定当前页面节点，不污染其他模块。
  */
-function bindLightEvents(onBack) {
+function bindLightEvents(onBack, onNext) {
   document.querySelectorAll('[data-light-slider]').forEach((node) => node.addEventListener('input', (event) => { const input = event.currentTarget; if (!(input instanceof HTMLInputElement)) return; const key = input.getAttribute('data-light-slider'); if (!key) return; lightState.params[key] = Number(input.value); updateLightPreview(); saveLightState(); }));
   document.querySelectorAll('[data-region]').forEach((node) => node.addEventListener('click', () => { const key = node.getAttribute('data-region'); if (!key) return; lightState.activeRegion = key; document.querySelectorAll('[data-region]').forEach((item) => item.classList.toggle('active', item.getAttribute('data-region') === key)); const label = node.querySelector('strong')?.textContent || '当前分区'; const note = node.querySelector('small')?.textContent || '局部光影'; const regionLabel = document.querySelector('#region-label'); const regionNote = document.querySelector('#region-note'); if (regionLabel) regionLabel.textContent = label; if (regionNote) regionNote.textContent = note; updateLightPreview(); }));
   document.querySelectorAll('[data-template]').forEach((node) => node.addEventListener('click', () => { const id = node.getAttribute('data-template'); const template = getTemplate(id); lightState.template = template.id; lightState.params = { ...lightState.params, ...template.values }; document.querySelectorAll('[data-template]').forEach((item) => item.classList.toggle('active', item.getAttribute('data-template') === template.id)); updateLightPreview(); saveLightState(); showLightToast(`已加载${template.label}光影模板`); }));
