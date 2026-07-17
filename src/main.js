@@ -343,6 +343,28 @@ function refreshState() {
  * 返回值：无。
  * 边界情况：文件为空或格式不是图片时显示错误提示。
  */
+/**
+ * 生成并保存跨模块使用的图片预览。
+ * 入参：image 已加载的图片对象。
+ * 返回值：无。
+ * 边界情况：图片过大或浏览器存储空间不足时放弃保存，不影响当前裁切页面。
+ */
+function savePreviewImage(image) {
+  try {
+    const maxSize = 1200;
+    const scale = Math.min(1, maxSize / Math.max(image.width, image.height));
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.max(1, Math.round(image.width * scale));
+    canvas.height = Math.max(1, Math.round(image.height * scale));
+    const context = canvas.getContext('2d');
+    if (!context) return;
+    context.drawImage(image, 0, 0, canvas.width, canvas.height);
+    sessionStorage.setItem('photoLabPreviewImage', canvas.toDataURL('image/jpeg', 0.82));
+  } catch {
+    sessionStorage.removeItem('photoLabPreviewImage');
+  }
+}
+
 function loadImage(file) {
   if (!file || !file.type.startsWith('image/')) { showToast('请选择 JPG、PNG 或 WEBP 图片'); return; }
   const imageUrl = URL.createObjectURL(file);
@@ -355,6 +377,7 @@ function loadImage(file) {
     state.offsetX = 0;
     state.offsetY = 0;
     state.confirmed = false;
+    savePreviewImage(image);
     const empty = document.querySelector('#empty-canvas');
     if (empty) empty.classList.add('hidden');
     const name = document.querySelector('#asset-name');

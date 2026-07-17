@@ -34,6 +34,19 @@ function readLightState() {
 }
 
 /**
+ * 读取构图模块传来的图片预览样式。
+ * 入参：无。
+ * 返回值：可直接用于行内 style 的背景图片声明。
+ * 边界情况：没有上传图片或会话存储不可用时返回空字符串，保留默认占位图。
+ */
+function getPreviewImageStyle() {
+  try {
+    const dataUrl = sessionStorage.getItem('photoLabPreviewImage');
+    return dataUrl?.startsWith('data:image/') ? `background-image: url("${dataUrl}");` : '';
+  } catch { return ''; }
+}
+
+/**
  * 将模块3页面挂载到应用根节点。
  * 入参：onBack 返回上一模块的导航回调。
  * 返回值：无。
@@ -42,8 +55,9 @@ function readLightState() {
 export function renderLightApp(onBack, onNext) {
   const app = document.querySelector('#app');
   if (!app) return;
+  const previewImageStyle = getPreviewImageStyle();
   app.innerHTML = `
-    <div class="light-shell">
+    <div class="light-shell" style="${previewImageStyle ? `--preview-image: url(\"${sessionStorage.getItem('photoLabPreviewImage')}\");` : ''}">
       <header class="light-topbar"><button class="light-brand" type="button" data-light-action="back"><span class="brand-mark">✦</span><span><strong>光屿</strong><small>PHOTO LAB</small></span></button><div class="light-title"><span>MODULE 03</span><strong>分层光影优化</strong></div><div class="light-top-actions"><span class="cloud-save-status" id="light-save-status"><i></i>${lightState.savedAt ? `已同步 · ${lightState.savedAt}` : '云端同步已开启'}</span><button class="light-help" type="button" data-light-action="help" aria-label="打开模块帮助">?</button><button class="light-avatar" type="button" aria-label="当前账号">林</button></div></header>
       <main class="light-workspace">
         <aside class="light-control-panel"><div class="light-panel-heading"><div><span class="light-kicker">A / GLOBAL LIGHT</span><h1>分层光影</h1><p>只调整明暗关系，不改变色彩与构图。</p></div><span class="light-badge">02</span></div>
