@@ -1,5 +1,7 @@
 # Guangyu Photo Lab (光屿 · 智能构图裁切)
 
+[![Deploy GitHub Pages](https://github.com/shu0819-sjy/guangyu-photo-lab/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/shu0819-sjy/guangyu-photo-lab/actions/workflows/deploy-pages.yml)
+
 A lightweight, zero-framework photo retouching playground built with Vite and vanilla JavaScript. Load a photo, get composition-aware cropping, light/color adjustments, and an instant scoring report — all client-side.
 
 **Live demo:** https://shu0819-sjy.github.io/guangyu-photo-lab/ (auto-deployed from `main` via GitHub Actions)
