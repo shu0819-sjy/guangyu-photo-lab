@@ -48,4 +48,4 @@ src/
 
 ## License
 
-Source-available for personal and academic study. No license is granted for commercial use unless one is added explicitly.
+This project is released under the [MIT License](./LICENSE). The included sample asset and any third-party dependencies may have separate terms; review their notices before redistribution.
