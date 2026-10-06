@@ -15,18 +15,25 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    name: Build / ${{ matrix.os }} / Node ${{ matrix.node-version }}
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        node-version: ['20', '22']
     steps:
       - uses: actions/checkout@v4
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ matrix.node-version }}
           cache: npm
+          cache-dependency-path: package-lock.json
 
-      - name: Install dependencies
+      - name: Install locked dependencies
         run: npm ci
 
       - name: ESLint
@@ -34,3 +41,9 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      - name: Regression tests
+        run: npm test
+
+      - name: Verify build artifact
+        run: node -e "const fs = require('fs'); if (!fs.existsSync('dist/index.html')) process.exit(1)"

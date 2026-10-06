@@ -10,6 +10,21 @@ const detailState = {
 };
 
 /**
+ * 转义不可信文本，避免文件名进入 HTML 模板时执行标记。
+ * 入参：value 要显示的文本。
+ * 返回值：可安全放入 HTML 文本节点的字符串。
+ * 边界情况：非字符串输入按空字符串处理。
+ */
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
+}
+
+/**
  * 读取画质与批量参数存档。
  * 入参：无。
  * 返回值：历史状态或空值。
@@ -56,7 +71,7 @@ function renderSingleView() {
  * 边界情况：无图片时显示上传空状态。
  */
 function renderBatchView() {
-  return `<section class="batch-detail-view"><div class="batch-header"><div><span class="detail-kicker">A / SERIES MATCH</span><h1>批量组图统一</h1><p>上传同系列作品与一张参考成片，统一整套视觉风格。</p></div><span class="batch-count" id="batch-count">${detailState.files.length} 张作品</span></div><div class="batch-upload-grid"><label class="batch-upload-main" for="batch-input"><input id="batch-input" type="file" accept="image/jpeg,image/png,image/webp" multiple /><span class="batch-upload-icon">＋</span><strong>批量上传组图</strong><small>支持手机多选 · 可上传数十张同系列作品</small></label><label class="reference-upload" for="reference-input"><input id="reference-input" type="file" accept="image/jpeg,image/png,image/webp" /><span class="reference-thumb" id="reference-thumb">◌</span><span><strong>${detailState.reference ? detailState.reference.name : '上传参考成片'}</strong><small>${detailState.reference ? '已载入满意成片' : '用一张满意作品统一风格'}</small></span><b>＋</b></label></div><div class="batch-options"><div class="batch-options-heading"><strong>同步参考成片参数</strong><span>AI 自动对齐</span></div><div class="batch-option-list">${renderBatchOption('exposure', '曝光')}${renderBatchOption('whiteBalance', '白平衡')}${renderBatchOption('contrast', '对比度')}${renderBatchOption('tone', '色调')}${renderBatchOption('vignette', '暗角')}</div></div><div class="batch-gallery-heading"><div><span class="detail-kicker">B / SERIES GALLERY</span><h2>组图预览</h2></div><span>按原始顺序排列</span></div><div class="batch-gallery" id="batch-gallery">${renderBatchGallery()}</div><button class="batch-unify" type="button" data-detail-action="unify"><span>✦</span>一键统一整套风格 <b>→</b></button></section>`;
+  return `<section class="batch-detail-view"><div class="batch-header"><div><span class="detail-kicker">A / SERIES MATCH</span><h1>批量组图统一</h1><p>上传同系列作品与一张参考成片，统一整套视觉风格。</p></div><span class="batch-count" id="batch-count">${detailState.files.length} 张作品</span></div><div class="batch-upload-grid"><label class="batch-upload-main" for="batch-input"><input id="batch-input" type="file" accept="image/jpeg,image/png,image/webp" multiple /><span class="batch-upload-icon">＋</span><strong>批量上传组图</strong><small>支持手机多选 · 可上传数十张同系列作品</small></label><label class="reference-upload" for="reference-input"><input id="reference-input" type="file" accept="image/jpeg,image/png,image/webp" /><span class="reference-thumb" id="reference-thumb">◌</span><span><strong>${detailState.reference ? escapeHtml(detailState.reference.name) : '上传参考成片'}</strong><small>${detailState.reference ? '已载入满意成片' : '用一张满意作品统一风格'}</small></span><b>＋</b></label></div><div class="batch-options"><div class="batch-options-heading"><strong>同步参考成片参数</strong><span>AI 自动对齐</span></div><div class="batch-option-list">${renderBatchOption('exposure', '曝光')}${renderBatchOption('whiteBalance', '白平衡')}${renderBatchOption('contrast', '对比度')}${renderBatchOption('tone', '色调')}${renderBatchOption('vignette', '暗角')}</div></div><div class="batch-gallery-heading"><div><span class="detail-kicker">B / SERIES GALLERY</span><h2>组图预览</h2></div><span>按原始顺序排列</span></div><div class="batch-gallery" id="batch-gallery">${renderBatchGallery()}</div><button class="batch-unify" type="button" data-detail-action="unify"><span>✦</span>一键统一整套风格 <b>→</b></button></section>`;
 }
 
 /**
